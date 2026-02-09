@@ -1,4 +1,4 @@
-package com.example.thymeleaf_helper;
+package com.example.cheatsheet;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
