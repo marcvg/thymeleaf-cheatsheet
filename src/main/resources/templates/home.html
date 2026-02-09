@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <title th:text="#{nav.title}">Cheat Sheet</title>
+</head>
+<body class="container">
+    <header>
+        <nav>
+            <ul>
+                <li><strong th:text="#{nav.title}">Thymeleaf & Pico.css Cheat Sheet</strong></li>
+            </ul>
+            <ul>
+                <li><a href="/" th:text="#{nav.home}">Home</a></li>
+                <li><a th:href="@{/fragments}" th:text="#{nav.fragments}">Fragments Demo</a></li>
+                <li><a th:href="@{/(lang=en)}">EN</a> | <a th:href="@{/(lang=nl)}">NL</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Toast dialog for POST feedback -->
+    <dialog th:if="${toastMessage}" id="toast" open>
+        <article>
+            <header>
+                <button aria-label="Close" rel="prev" onclick="this.closest('dialog').close()"></button>
+                <p><strong th:text="#{toast.title}">Notification</strong></p>
+            </header>
+            <p th:text="${toastMessage}">Message here</p>
+        </article>
+    </dialog>
+
+    <main>
+        <h1 th:text="${title}">Page Title</h1>
+
+        <!-- ============================================================ -->
+        <!-- Section 1: Variable Expressions -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>1. Variable Expressions</h2>
+            <div class="grid">
+                <div>
+                    <p>Status: <ins th:if="${userActive}" th:text="#{label.active}">Active</ins><del th:unless="${userActive}" th:text="#{label.inactive}">Inactive</del></p>
+                </div>
+                <div>
+                    <pre><code>&lt;p&gt;Status:
+  &lt;ins th:if="${userActive}"&gt;Active&lt;/ins&gt;
+  &lt;del th:unless="${userActive}"&gt;Inactive&lt;/del&gt;
+&lt;/p&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 2: Iteration & Accordion -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>2. Iteration (Lists) &amp; Accordion</h2>
+            <div class="grid">
+                <div>
+                    <article>
+                        <header>Customer List (Accordions)</header>
+                        <details th:each="customer : ${customers}">
+                            <summary th:text="|${customer.firstName} ${customer.lastName}|">User Name</summary>
+                            <ul>
+                                <li th:text="|Street: ${customer.street}|">Street</li>
+                                <li th:text="|Number: ${customer.houseNumber}|">No</li>
+                                <li>Status: <span th:class="${customer.active ? 'active-label' : 'inactive-label'}"
+                                                  th:text="${customer.active ? 'Active' : 'Inactive'}">Status</span></li>
+                            </ul>
+                        </details>
+                    </article>
+                </div>
+                <div>
+                    <pre><code>&lt;details th:each="customer : ${customers}"&gt;
+  &lt;summary
+    th:text="|${customer.firstName} ${customer.lastName}|"&gt;
+    User Name
+  &lt;/summary&gt;
+  &lt;ul&gt;
+    &lt;li th:text="|Street: ${customer.street}|"&gt;&lt;/li&gt;
+    &lt;li th:text="|Number: ${customer.houseNumber}|"&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/details&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 3: Forms & Grid Layout -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>3. Forms &amp; Grid Layout</h2>
+            <div class="grid">
+                <div>
+                    <form th:object="${searchFilter}">
+                        <div class="grid">
+                            <input type="text" th:field="*{firstName}" th:placeholder="#{form.firstName}" th:aria-label="#{form.firstName}">
+                            <input type="text" th:field="*{lastName}" th:placeholder="#{form.lastName}" th:aria-label="#{form.lastName}">
+                        </div>
+                        <input type="text" th:field="*{streetName}" th:placeholder="#{form.streetName}" th:aria-label="#{form.streetName}">
+                        <button type="submit" th:text="#{button.filter}">Filter Results</button>
+                    </form>
+                </div>
+                <div>
+                    <pre><code>&lt;form th:object="${searchFilter}"&gt;
+  &lt;div class="grid"&gt;
+    &lt;input type="text" th:field="*{firstName}" ...&gt;
+    &lt;input type="text" th:field="*{lastName}" ...&gt;
+  &lt;/div&gt;
+  &lt;input type="text" th:field="*{streetName}" ...&gt;
+  &lt;button type="submit"&gt;Filter&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 4: Utility Objects -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>4. Utility Objects</h2>
+            <div class="grid">
+                <div>
+                    <p>Default format: <span th:text="${todaysDate}">2026-01-01</span></p>
+                    <p>Custom format: <span th:text="${#temporals.format(todaysDate, 'dd/MM/yyyy')}">01/01/2026</span></p>
+                    <p>Day of week: <span th:text="${#temporals.dayOfWeekName(todaysDate)}">Monday</span></p>
+                </div>
+                <div>
+                    <pre><code>&lt;span th:text="${todaysDate}"&gt;&lt;/span&gt;
+
+&lt;span th:text="${#temporals.format(
+    todaysDate, 'dd/MM/yyyy')}"&gt;
+&lt;/span&gt;
+
+&lt;span th:text="${#temporals.dayOfWeekName(
+    todaysDate)}"&gt;
+&lt;/span&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 5: Literal Substitutions -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>5. Literal Substitutions (Pipe Syntax)</h2>
+            <div class="grid">
+                <div>
+                    <p><strong>Pipe syntax (clean):</strong></p>
+                    <p th:text="|Hello, ${firstName} ${lastName}!|">Hello, John Doe!</p>
+                    <p><strong>Concatenation (ugly):</strong></p>
+                    <p th:text="'Hello, ' + ${firstName} + ' ' + ${lastName} + '!'">Hello, John Doe!</p>
+                </div>
+                <div>
+                    <pre><code><strong>Pipe syntax |...| (preferred):</strong>
+&lt;p th:text="|Hello, ${firstName} ${lastName}!|"&gt;
+&lt;/p&gt;
+
+<strong>String concatenation (avoid):</strong>
+&lt;p th:text="'Hello, ' + ${firstName}
+    + ' ' + ${lastName} + '!'"&gt;
+&lt;/p&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 6: Link URL Expressions -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>6. Link URL Expressions @{...}</h2>
+            <div class="grid">
+                <div>
+                    <ul>
+                        <li>Simple: <a th:href="@{/fragments}">@{/fragments}</a></li>
+                        <li>With path variable: <a th:href="@{/fragments/{tab}(tab='customers')}">@{/fragments/{tab}}</a></li>
+                        <li>With query params: <a th:href="@{/fragments(tab='customers',sort='name')}">@{/path(params)}</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <pre><code>&lt;a th:href="@{/fragments}"&gt;Simple&lt;/a&gt;
+
+&lt;a th:href="@{/fragments/{tab}(tab='customers')}"&gt;
+  Path variable
+&lt;/a&gt;
+
+&lt;a th:href="@{/fragments(
+    tab='customers',sort='name')}"&gt;
+  Query params
+&lt;/a&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 7: Switch / Case -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>7. Switch / Case</h2>
+            <div class="grid">
+                <div>
+                    <p>Order status:
+                    <span th:switch="${orderStatus}">
+                        <mark th:case="'PENDING'" style="--pico-background-color: orange;">Pending</mark>
+                        <mark th:case="'SHIPPED'" style="--pico-background-color: dodgerblue;">Shipped</mark>
+                        <mark th:case="'DELIVERED'" style="--pico-background-color: green;">Delivered</mark>
+                        <span th:case="*">Unknown</span>
+                    </span>
+                    </p>
+                    <small>(Model value: <code th:text="${orderStatus}">STATUS</code> — try changing it in the controller)</small>
+                </div>
+                <div>
+                    <pre><code>&lt;span th:switch="${orderStatus}"&gt;
+  &lt;mark th:case="'PENDING'"&gt;Pending&lt;/mark&gt;
+  &lt;mark th:case="'SHIPPED'"&gt;Shipped&lt;/mark&gt;
+  &lt;mark th:case="'DELIVERED'"&gt;Delivered&lt;/mark&gt;
+  &lt;span th:case="*"&gt;Unknown&lt;/span&gt;
+&lt;/span&gt;
+
+Note: th:case="*" is the default case.</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 8: Local Variables & Elvis Operator -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>8. Local Variables (th:with) &amp; Elvis Operator</h2>
+            <div class="grid">
+                <div>
+                    <div th:with="fullName=|${firstName} ${lastName}|">
+                        <p>Full name (th:with): <strong th:text="${fullName}">Full Name</strong></p>
+                    </div>
+                    <p>Nickname: <span th:text="${nickname} ?: 'No nickname set'">fallback</span></p>
+                    <p>First name: <span th:text="${firstName} ?: 'Anonymous'">fallback</span></p>
+                </div>
+                <div>
+                    <pre><code><strong>Local variable with th:with:</strong>
+&lt;div th:with="fullName=|${firstName} ${lastName}|"&gt;
+  &lt;p th:text="${fullName}"&gt;&lt;/p&gt;
+&lt;/div&gt;
+
+<strong>Elvis operator (?:) for null defaults:</strong>
+&lt;span th:text="${nickname} ?: 'No nickname set'"&gt;
+&lt;/span&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 9: Inline Expressions -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>9. Inline Expressions</h2>
+            <div class="grid">
+                <div>
+                    <p th:inline="text">Inline text: [[${firstName}]] [[${lastName}]]</p>
+                    <p>Works without th:inline too: [[${todaysDate}]]</p>
+                    <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        // This shows how to pass model data to JavaScript:
+                        var userName = /*[[${firstName}]]*/ "default";
+                        console.log("Thymeleaf says hello to: " + userName);
+                        /*]]>*/
+                    </script>
+                </div>
+                <div>
+                    <pre><code><strong>Inline text (escaped):</strong>
+&lt;p th:inline="text"&gt;
+  Hello [[${firstName}]] [[${lastName}]]
+&lt;/p&gt;
+
+<strong>Without th:inline (also works):</strong>
+&lt;p&gt;Today is: [[${todaysDate}]]&lt;/p&gt;
+
+<strong>Inline JavaScript:</strong>
+&lt;script th:inline="javascript"&gt;
+  var user = /*[[${firstName}]]*/ "default";
+&lt;/script&gt;
+
+Note: [[...]] is escaped, [(...)]] is unescaped.</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 10: Dynamic Attributes -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>10. Dynamic Attributes</h2>
+            <div class="grid">
+                <div>
+                    <p th:classappend="${highlightRow} ? 'active-label'">
+                        This paragraph has a conditionally appended class.
+                    </p>
+                    <a href="#" th:attr="data-tooltip=|Progress: ${progress}%|">Hover for dynamic tooltip</a>
+                    <br/><br/>
+                    <button th:attrappend="class=${highlightRow} ? ' outline'">Dynamic class append</button>
+                </div>
+                <div>
+                    <pre><code><strong>th:classappend (adds to existing class):</strong>
+&lt;p th:classappend="${flag} ? 'highlight'"&gt;
+&lt;/p&gt;
+
+<strong>th:attr (set any attribute):</strong>
+&lt;a th:attr="data-tooltip=|Progress: ${val}%|"&gt;
+&lt;/a&gt;
+
+<strong>th:attrappend (append to attribute):</strong>
+&lt;button th:attrappend=
+    "class=${flag} ? ' outline'"&gt;
+&lt;/button&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 11: i18n / Message Expressions -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>11. Internationalization (i18n)</h2>
+            <div class="grid">
+                <div>
+                    <p>Simple message: <strong th:text="#{nav.title}">Title</strong></p>
+                    <p>Parameterized: <span th:text="#{greeting(${firstName})}">Hello!</span></p>
+                    <p>With two params: <span th:text="#{greeting.personalized(${firstName}, ${lastName})}">Welcome!</span></p>
+                    <p>
+                        Switch language:
+                        <a th:href="@{/(lang=en)}">English</a> |
+                        <a th:href="@{/(lang=nl)}">Nederlands</a>
+                    </p>
+                </div>
+                <div>
+                    <pre><code><strong>messages.properties:</strong>
+nav.title=Thymeleaf &amp; Pico.css Cheat Sheet
+greeting=Hello, {0}!
+greeting.personalized=Welcome, {0} {1}!
+
+<strong>messages_nl.properties:</strong>
+nav.title=Thymeleaf &amp; Pico.css Spiekbriefje
+greeting=Hallo, {0}!
+
+<strong>Template usage:</strong>
+&lt;span th:text="#{nav.title}"&gt;&lt;/span&gt;
+&lt;span th:text="#{greeting(${firstName})}"&gt;&lt;/span&gt;
+&lt;a th:href="@{/(lang=nl)}"&gt;NL&lt;/a&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 12: Working POST Form with Toast -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>12. Working POST Form with Toast Feedback</h2>
+            <div class="grid">
+                <div>
+                    <form th:action="@{/}" th:object="${searchFilter}" method="post">
+                        <div class="grid">
+                            <label>
+                                <span th:text="#{form.firstName}">First Name</span>
+                                <input type="text" th:field="*{firstName}">
+                            </label>
+                            <label>
+                                <span th:text="#{form.lastName}">Last Name</span>
+                                <input type="text" th:field="*{lastName}">
+                            </label>
+                        </div>
+                        <label>
+                            <span th:text="#{form.streetName}">Street Name</span>
+                            <input type="text" th:field="*{streetName}">
+                        </label>
+                        <button type="submit" th:text="#{button.submit}">Submit</button>
+                    </form>
+                </div>
+                <div>
+                    <pre><code><strong>Template (form with POST action):</strong>
+&lt;form th:action="@{/}"
+      th:object="${searchFilter}"
+      method="post"&gt;
+  &lt;input type="text" th:field="*{firstName}"&gt;
+  &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;
+
+<strong>Toast (Pico &lt;dialog&gt; with flash attribute):</strong>
+&lt;dialog th:if="${toastMessage}" open&gt;
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;button aria-label="Close" rel="prev"
+        onclick="this.closest('dialog').close()"&gt;
+      &lt;/button&gt;
+      &lt;p&gt;&lt;strong&gt;Notification&lt;/strong&gt;&lt;/p&gt;
+    &lt;/header&gt;
+    &lt;p th:text="${toastMessage}"&gt;&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/dialog&gt;
+
+<strong>Controller:</strong>
+@PostMapping("/")
+String handlePost(@ModelAttribute SearchFilter filter,
+    RedirectAttributes redirect) {
+  redirect.addFlashAttribute("toastMessage",
+      "Filter applied for: " + filter.getName());
+  return "redirect:/";
+}</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 13: Tables (Pico) -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>13. Pico Tables</h2>
+            <div class="grid">
+                <div>
+                    <figure>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Street</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="customer, iterStat : ${customers}">
+                                    <th scope="row" th:text="${iterStat.count}">1</th>
+                                    <td th:text="|${customer.firstName} ${customer.lastName}|">Name</td>
+                                    <td th:text="|${customer.street} ${customer.houseNumber}|">Street</td>
+                                    <td>
+                                        <mark th:if="${customer.active}" th:text="#{label.active}">Active</mark>
+                                        <del th:unless="${customer.active}" th:text="#{label.inactive}">Inactive</del>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </figure>
+                    <small>Note: <code>iterStat.count</code> starts at 1, <code>iterStat.index</code> starts at 0. Also available: <code>.size</code>, <code>.even</code>, <code>.odd</code>, <code>.first</code>, <code>.last</code></small>
+                </div>
+                <div>
+                    <pre><code>&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope="col"&gt;#&lt;/th&gt;
+      &lt;th scope="col"&gt;Name&lt;/th&gt;
+      ...
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr th:each="c, iterStat : ${customers}"&gt;
+      &lt;th th:text="${iterStat.count}"&gt;1&lt;/th&gt;
+      &lt;td th:text="|${c.firstName} ${c.lastName}|"&gt;
+      &lt;/td&gt;
+      &lt;td&gt;
+        &lt;mark th:if="${c.active}"&gt;Active&lt;/mark&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+<strong>Iteration status variable (iterStat):</strong>
+.index  (0-based)    .count (1-based)
+.size   (total)      .current (element)
+.even   .odd         .first   .last</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 14: Modal Dialog (Pico) -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>14. Pico Modal Dialog</h2>
+            <div class="grid">
+                <div>
+                    <button onclick="document.getElementById('demo-modal').showModal()" th:text="#{button.open-modal}">Open Modal</button>
+                    <dialog id="demo-modal">
+                        <article>
+                            <header>
+                                <button aria-label="Close" rel="prev" onclick="document.getElementById('demo-modal').close()"></button>
+                                <p><strong>Modal Title</strong></p>
+                            </header>
+                            <p>This is a native Pico CSS modal using the <code>&lt;dialog&gt;</code> element. No JavaScript framework needed.</p>
+                            <footer>
+                                <button class="secondary" onclick="document.getElementById('demo-modal').close()" th:text="#{button.close}">Close</button>
+                                <button onclick="document.getElementById('demo-modal').close()">Confirm</button>
+                            </footer>
+                        </article>
+                    </dialog>
+                </div>
+                <div>
+                    <pre><code>&lt;button onclick="document.getElementById(
+    'my-modal').showModal()"&gt;
+  Open Modal
+&lt;/button&gt;
+
+&lt;dialog id="my-modal"&gt;
+  &lt;article&gt;
+    &lt;header&gt;
+      &lt;button aria-label="Close" rel="prev"
+        onclick="...close()"&gt;&lt;/button&gt;
+      &lt;p&gt;&lt;strong&gt;Title&lt;/strong&gt;&lt;/p&gt;
+    &lt;/header&gt;
+    &lt;p&gt;Modal content here.&lt;/p&gt;
+    &lt;footer&gt;
+      &lt;button class="secondary"&gt;Cancel&lt;/button&gt;
+      &lt;button&gt;Confirm&lt;/button&gt;
+    &lt;/footer&gt;
+  &lt;/article&gt;
+&lt;/dialog&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 15: Tooltips, Progress & Loading (Pico) -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>15. Pico Tooltips, Progress &amp; Loading</h2>
+            <div class="grid">
+                <div>
+                    <p>
+                        <a href="#" data-tooltip="I am a tooltip!">Hover over me (tooltip)</a>
+                    </p>
+                    <p>
+                        Progress bar:
+                        <progress th:value="${progress}" max="100"></progress>
+                    </p>
+                    <p>
+                        Indeterminate progress:
+                        <progress></progress>
+                    </p>
+                    <p>
+                        <button aria-busy="true" class="secondary">Loading button...</button>
+                        <button aria-busy="true" class="outline">Loading outline...</button>
+                    </p>
+                </div>
+                <div>
+                    <pre><code><strong>Tooltip (data-tooltip attribute):</strong>
+&lt;a data-tooltip="I am a tooltip!"&gt;Hover&lt;/a&gt;
+
+<strong>Progress bar:</strong>
+&lt;progress value="75" max="100"&gt;&lt;/progress&gt;
+
+<strong>Indeterminate progress:</strong>
+&lt;progress&gt;&lt;/progress&gt;
+
+<strong>Loading / busy buttons:</strong>
+&lt;button aria-busy="true"&gt;
+  Loading...
+&lt;/button&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <hr/>
+
+        <!-- ============================================================ -->
+        <!-- Section 16: Form Validation Styling (Pico) -->
+        <!-- ============================================================ -->
+        <section>
+            <h2>16. Pico Form Components &amp; Validation</h2>
+            <div class="grid">
+                <div>
+                    <form>
+                        <label>
+                            Valid input
+                            <input type="text" value="Looks good" aria-invalid="false">
+                            <small>This field is valid.</small>
+                        </label>
+                        <label>
+                            Invalid input
+                            <input type="email" value="not-an-email" aria-invalid="true">
+                            <small>Please enter a valid email address.</small>
+                        </label>
+                        <label>
+                            Select dropdown
+                            <select>
+                                <option value="" disabled selected>Pick an option...</option>
+                                <option>Option A</option>
+                                <option>Option B</option>
+                                <option>Option C</option>
+                            </select>
+                        </label>
+                        <fieldset>
+                            <legend>Checkboxes</legend>
+                            <label><input type="checkbox" checked> Option 1</label>
+                            <label><input type="checkbox"> Option 2</label>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Radio buttons</legend>
+                            <label><input type="radio" name="radio-demo" checked> Choice A</label>
+                            <label><input type="radio" name="radio-demo"> Choice B</label>
+                        </fieldset>
+                        <label>
+                            Range slider
+                            <input type="range" min="0" max="100" value="50">
+                        </label>
+                        <label>
+                            Textarea
+                            <textarea placeholder="Write something..."></textarea>
+                        </label>
+                    </form>
+                </div>
+                <div>
+                    <pre><code><strong>Validation with aria-invalid:</strong>
+&lt;input aria-invalid="false" value="good"&gt;
+&lt;small&gt;This field is valid.&lt;/small&gt;
+
+&lt;input aria-invalid="true" value="bad"&gt;
+&lt;small&gt;Please enter a valid email.&lt;/small&gt;
+
+<strong>Select dropdown:</strong>
+&lt;select&gt;
+  &lt;option disabled selected&gt;Pick...&lt;/option&gt;
+  &lt;option&gt;Option A&lt;/option&gt;
+&lt;/select&gt;
+
+<strong>Checkboxes &amp; Radios:</strong>
+&lt;fieldset&gt;
+  &lt;legend&gt;Checkboxes&lt;/legend&gt;
+  &lt;label&gt;&lt;input type="checkbox"&gt; Opt&lt;/label&gt;
+&lt;/fieldset&gt;
+
+<strong>Range &amp; Textarea:</strong>
+&lt;input type="range" min="0" max="100"&gt;
+&lt;textarea placeholder="Write..."&gt;&lt;/textarea&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <hr/>
+        <p><small th:text="#{footer.text}">Built with Spring Boot, Thymeleaf &amp; Pico.css</small></p>
+    </footer>
+
+    <style>
+        .active-label { color: green; font-weight: bold; }
+        .inactive-label { color: gray; font-style: italic; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; }
+        [data-theme="dark"] pre { background: #1a1a1a; }
+    </style>
+</body>
+</html>

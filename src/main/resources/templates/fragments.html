@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <title th:text="#{fragments.title}">Fragments Demo</title>
+</head>
+<body class="container">
+
+    <!-- th:replace replaces this entire <div> with the header fragment -->
+    <div th:replace="~{fragments/header :: header(#{fragments.title})}">Header placeholder</div>
+
+    <main>
+        <h1 th:text="#{fragments.title}">Fragments Demo</h1>
+
+        <!-- Tab navigation using Pico nav + link URL expressions -->
+        <nav>
+            <ul>
+                <li>
+                    <a th:href="@{/fragments/overview}"
+                       th:text="#{fragments.tab.overview}"
+                       th:classappend="${activeTab == 'overview'} ? 'contrast'">Overview</a>
+                </li>
+                <li>
+                    <a th:href="@{/fragments/customers}"
+                       th:text="#{fragments.tab.customers}"
+                       th:classappend="${activeTab == 'customers'} ? 'contrast'">Customers</a>
+                </li>
+                <li>
+                    <a th:href="@{/fragments/about}"
+                       th:text="#{fragments.tab.about}"
+                       th:classappend="${activeTab == 'about'} ? 'contrast'">About</a>
+                </li>
+            </ul>
+        </nav>
+
+        <hr/>
+
+        <!-- Conditional fragment inclusion: th:if on a wrapper, th:replace inside -->
+        <!-- You cannot combine th:if + th:replace on the same element because -->
+        <!-- th:replace removes the host tag (and its th:if) before evaluation. -->
+        <!-- Solution: use th:block (renders no HTML) for the condition. -->
+        <th:block th:if="${activeTab == 'overview'}">
+            <div th:replace="~{fragments/content-overview :: content}">Overview content</div>
+        </th:block>
+        <th:block th:if="${activeTab == 'customers'}">
+            <div th:replace="~{fragments/content-customers :: content}">Customers content</div>
+        </th:block>
+        <th:block th:if="${activeTab == 'about'}">
+            <div th:replace="~{fragments/content-about :: content}">About content</div>
+        </th:block>
+    </main>
+
+    <!-- th:insert inserts the footer fragment as a child (keeps the outer <div>) -->
+    <div th:insert="~{fragments/footer :: footer}">Footer placeholder</div>
+
+    <style>
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: 0.85rem; }
+        [data-theme="dark"] pre { background: #1a1a1a; }
+        nav a.contrast { font-weight: bold; }
+    </style>
+</body>
+</html>

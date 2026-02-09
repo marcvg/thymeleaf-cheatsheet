@@ -1,0 +1,34 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <section th:fragment="content">
+        <h2 th:text="#{fragments.customers.heading}">Customer Directory</h2>
+        <article>
+            <figure>
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Address</th>
+                            <th scope="col" th:text="#{label.status}">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="customer, iterStat : ${customers}">
+                            <th scope="row" th:text="${iterStat.count}">1</th>
+                            <td th:text="|${customer.firstName} ${customer.lastName}|">Name</td>
+                            <td th:text="|${customer.street} ${customer.houseNumber}|">Address</td>
+                            <td>
+                                <mark th:if="${customer.active}" th:text="#{label.active}">Active</mark>
+                                <del th:unless="${customer.active}" th:text="#{label.inactive}">Inactive</del>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </figure>
+            <small>This table is rendered inside a fragment that receives <code>${customers}</code> from the model.</small>
+        </article>
+    </section>
+</body>
+</html>
