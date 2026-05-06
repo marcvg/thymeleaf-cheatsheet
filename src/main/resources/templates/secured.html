@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
+    <title>Secured Page</title>
+</head>
+<body>
+
+<header th:replace="~{fragments/header :: header('Secured Area')}"></header>
+
+<main class="container">
+
+    <h1>Secured Area</h1>
+    <p>You are authenticated via <strong>Azure AD Single Sign-On</strong>.</p>
+
+    <!-- ── User profile ──────────────────────────────────────────────────── -->
+    <article>
+        <header>Your profile</header>
+
+        <table>
+            <tbody>
+                <tr>
+                    <th scope="row">Full name</th>
+                    <td th:text="${fullName}">Jane Doe</td>
+                </tr>
+                <tr>
+                    <th scope="row">Preferred username</th>
+                    <td th:text="${username}">jane.doe@example.com</td>
+                </tr>
+                <tr>
+                    <th scope="row">Email</th>
+                    <td th:text="${email}">jane.doe@example.com</td>
+                </tr>
+            </tbody>
+        </table>
+    </article>
+
+    <!-- ── Spring Security Thymeleaf dialect demo ────────────────────────── -->
+    <article>
+        <header>Spring Security dialect (<code>sec:</code>)</header>
+        <p>
+            Logged in as:
+            <strong sec:authentication="principal.preferredUsername">unknown</strong>
+        </p>
+        <p sec:authorize="isAuthenticated()">
+            <em>This paragraph is only rendered when the user is authenticated.</em>
+        </p>
+    </article>
+
+    <!-- ── REST API quickstart ───────────────────────────────────────────── -->
+    <article>
+        <header>REST API (App Reg 1)</header>
+        <p>
+            The <code>GET /api/hello</code> endpoint is separately secured with a Bearer token
+            issued to the <strong>REST API app registration</strong>. It is not affected by this
+            SSO session.
+        </p>
+        <pre><code>token=$(az account get-access-token \
+  --resource api://&lt;rest-api-client-id&gt; \
+  --query accessToken -o tsv)
+
+curl -H "Authorization: Bearer $token" \
+     http://localhost:8080/api/hello</code></pre>
+    </article>
+
+    <!-- ── Logout ─────────────────────────────────────────────────────────── -->
+    <form th:action="@{/logout}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <button type="submit" class="secondary">Sign out</button>
+    </form>
+
+</main>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+</body>
+</html>

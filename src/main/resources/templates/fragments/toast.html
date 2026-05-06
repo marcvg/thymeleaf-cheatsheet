@@ -1,0 +1,93 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Non-modal corner toasts. Rendered as plain <div>s (not <dialog>) so they sit
+  in the top-right without blocking the page or trapping focus. ARIA:
+    - success: role="status" + aria-live="polite"   (announced when convenient)
+    - error:   role="alert"  + aria-live="assertive" (announced immediately)
+
+  Success auto-dismisses after 4s. Errors stay until the user clicks × — they
+  signal something the user needs to act on, so they shouldn't disappear on
+  their own. The container is fixed-position so a stack of toasts (if you ever
+  flash multiple) lays out naturally.
+-->
+<th:block th:fragment="toast">
+
+    <div th:if="${toastMessage != null or toastError != null}" class="toast-stack">
+
+        <div th:if="${toastMessage}" class="toast toast-success" role="status" aria-live="polite">
+            <span class="toast-icon" aria-hidden="true">✓</span>
+            <span class="toast-text" th:text="${toastMessage}">Message</span>
+            <button class="toast-close" aria-label="Close"
+                    onclick="this.closest('.toast').remove()">×</button>
+        </div>
+
+        <div th:if="${toastError}" class="toast toast-error" role="alert" aria-live="assertive">
+            <span class="toast-icon" aria-hidden="true">!</span>
+            <span class="toast-text" th:text="${toastError}">Error</span>
+            <button class="toast-close" aria-label="Close"
+                    onclick="this.closest('.toast').remove()">×</button>
+        </div>
+    </div>
+
+    <script th:if="${toastMessage != null}">
+        // Success auto-dismisses; errors do not (user must acknowledge them).
+        document.querySelectorAll('.toast-success').forEach(t => setTimeout(() => t.remove(), 4000));
+    </script>
+
+    <style th:if="${toastMessage != null or toastError != null}">
+        .toast-stack {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: min(22rem, calc(100vw - 2rem));
+        }
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--pico-border-radius);
+            background: var(--pico-card-background-color);
+            border-left: 4px solid var(--pico-primary-border);
+            box-shadow: var(--pico-card-box-shadow);
+            animation: toast-in 0.2s ease-out;
+        }
+        .toast-success { border-left-color: var(--pico-color-green-500, #2e7d32); }
+        .toast-error   { border-left-color: var(--pico-color-red-500,  #c0392b); }
+        .toast-icon {
+            font-weight: 700;
+            width: 1.5rem; height: 1.5rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            color: white;
+            flex-shrink: 0;
+        }
+        .toast-success .toast-icon { background: var(--pico-color-green-500, #2e7d32); }
+        .toast-error   .toast-icon { background: var(--pico-color-red-500,  #c0392b); }
+        .toast-text { flex: 1; font-size: 0.95rem; line-height: 1.3; }
+        .toast-close {
+            all: unset;
+            cursor: pointer;
+            font-size: 1.25rem;
+            line-height: 1;
+            padding: 0 0.25rem;
+            color: var(--pico-muted-color);
+            border-radius: 0.25rem;
+        }
+        .toast-close:hover { color: var(--pico-color); }
+        @keyframes toast-in {
+            from { transform: translateX(0.5rem); opacity: 0; }
+            to   { transform: translateX(0);     opacity: 1; }
+        }
+    </style>
+</th:block>
+
+</body>
+</html>

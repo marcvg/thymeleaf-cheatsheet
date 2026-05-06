@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <title th:text="#{buildings.title}">Buildings</title>
+</head>
+<body class="container">
+
+    <div th:replace="~{fragments/header :: header(#{buildings.title})}">Header</div>
+    <div th:replace="~{fragments/toast :: toast}">Toast</div>
+
+    <main>
+        <hgroup>
+            <h1 th:text="#{buildings.title}">Buildings</h1>
+            <p>
+                <span th:text="${current.name}">Building name</span>
+                <span th:if="${!current.active}" class="badge-inactive" th:text="|· #{label.inactive}|"> · Inactive</span>
+            </p>
+        </hgroup>
+
+        <!-- =================================================================
+             Two side-by-side detail panes. Each is its own form posting to its
+             own endpoint, so saving the address won't reset edits in the info
+             pane and vice versa. Validation errors render in place; the *other*
+             pane keeps its canonical (unedited) state.
+             ================================================================= -->
+        <div class="grid">
+
+            <!-- ----- Address pane ----- -->
+            <article>
+                <header>
+                    <strong th:text="#{buildings.address}">Address</strong>
+                </header>
+                <form th:action="@{/ui/buildings/{id}/address(id=${selectedId})}"
+                      th:object="${addressForm}" method="post" novalidate
+                      class="dirty-aware">
+                    <div th:replace="~{fragments/field :: text('street', #{address.street})}"></div>
+                    <div class="grid">
+                        <div th:replace="~{fragments/field :: text('number', #{address.number})}"></div>
+                        <div th:replace="~{fragments/field :: text('postalCode', #{address.postalCode})}"></div>
+                    </div>
+                    <div th:replace="~{fragments/field :: text('city', #{address.city})}"></div>
+                    <footer hidden>
+                        <button type="submit" th:text="#{button.save}">Save</button>
+                        <a th:href="@{/ui/buildings(selected=${selectedId})}"
+                           role="button" class="secondary outline"
+                           th:text="#{button.cancel}">Cancel</a>
+                    </footer>
+                </form>
+            </article>
+
+            <!-- ----- Building info pane ----- -->
+            <article>
+                <header>
+                    <strong th:text="#{buildings.info}">Building info</strong>
+                </header>
+                <form th:action="@{/ui/buildings/{id}/info(id=${selectedId})}"
+                      th:object="${buildingInfoForm}" method="post" novalidate
+                      class="dirty-aware">
+                    <div class="grid">
+                        <div th:replace="~{fragments/field :: number('yearBuilt', #{buildingInfo.yearBuilt})}"></div>
+                        <div th:replace="~{fragments/field :: number('floors', #{buildingInfo.floors})}"></div>
+                    </div>
+                    <div th:replace="~{fragments/field :: number('floorAreaM2', #{buildingInfo.floorArea})}"></div>
+                    <div th:replace="~{fragments/field :: select('energyLabel', #{buildingInfo.energyLabel}, ${ {'A','B','C','D','E','F','G'} })}"></div>
+                    <div th:replace="~{fragments/field :: checkbox('hasElevator', #{buildingInfo.hasElevator})}"></div>
+                    <footer hidden>
+                        <button type="submit" th:text="#{button.save}">Save</button>
+                        <a th:href="@{/ui/buildings(selected=${selectedId})}"
+                           role="button" class="secondary outline"
+                           th:text="#{button.cancel}">Cancel</a>
+                    </footer>
+                </form>
+            </article>
+        </div>
+
+        <hr/>
+
+        <!-- =================================================================
+             List pane — selecting a row reloads the page with that asset's
+             data in both detail panes. Deactivate is a separate POST that may
+             trigger a business-rule toast (e.g. open valuations).
+             ================================================================= -->
+        <h2 th:text="#{buildings.list}">All buildings</h2>
+        <figure>
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th th:text="#{buildings.list.name}">Name</th>
+                    <th th:text="#{buildings.list.address}">Address</th>
+                    <th th:text="#{buildings.list.year}">Year</th>
+                    <th th:text="#{buildings.list.status}">Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="a : ${assets}"
+                    th:classappend="${a.id == selectedId} ? 'selected'"
+                    class="clickable-row"
+                    th:data-href="@{/ui/buildings(selected=${a.id})}">
+                    <td>
+                        <!-- Real <a> in the first cell so keyboard / screen-reader users
+                             have a focusable target; the row-click JS below is purely a
+                             pointer convenience layered on top. -->
+                        <a th:href="@{/ui/buildings(selected=${a.id})}" th:text="${a.name}">Name</a>
+                    </td>
+                    <td th:text="|${a.address.street} ${a.address.number}, ${a.address.postalCode} ${a.address.city}|">Address</td>
+                    <td th:text="${a.buildingInfo.yearBuilt}">2000</td>
+                    <td>
+                        <span th:if="${a.active}" th:text="#{label.active}">Active</span>
+                        <span th:unless="${a.active}" th:text="#{label.inactive}">Inactive</span>
+                    </td>
+                    <td>
+                        <form th:if="${a.active}"
+                              th:action="@{/ui/buildings/{id}/deactivate(id=${a.id})}"
+                              method="post" style="display:inline">
+                            <button type="submit" class="contrast outline btn-sm"
+                                    th:text="#{buildings.deactivate}">Deactivate</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        </figure>
+    </main>
+
+    <div th:insert="~{fragments/footer :: footer}">Footer</div>
+
+    <style>
+        tr.selected { background: var(--pico-primary-background); }
+        tr.selected td, tr.selected td a { color: var(--pico-primary-inverse); }
+        tr.clickable-row { cursor: pointer; }
+        tr.clickable-row:hover:not(.selected) { background: var(--pico-secondary-background, rgba(0,0,0,0.04)); }
+        .field { margin-bottom: 0.5rem; }
+        .field small { color: var(--pico-color-red-500, #c0392b); }
+        .badge-inactive { color: var(--pico-muted-color); font-weight: normal; }
+        form.dirty-aware > footer { margin-top: 1rem; padding-top: 0.5rem; display: flex; gap: 0.5rem; align-items: center; }
+        form.dirty-aware > footer[hidden] { display: none; }
+        form.dirty-aware > footer > button,
+        form.dirty-aware > footer > [role="button"] { margin: 0; width: auto; flex: 0 0 auto; }
+        button.btn-sm { width: auto; margin: 0; font-size: 0.8rem; padding: 0.25rem 0.6rem; }
+    </style>
+
+    <script>
+        // Row-as-link: clicks anywhere on a row navigate to the asset's detail
+        // unless the click landed on something already interactive (the deactivate
+        // form/button or the in-cell <a>, which handle their own navigation).
+        document.querySelectorAll('tr.clickable-row').forEach(row => {
+            row.addEventListener('click', e => {
+                if (e.target.closest('a, button, form, input, select')) return;
+                window.location.href = row.dataset.href;
+            });
+        });
+
+        // Dirty-aware forms: hide save/cancel until the user actually changes
+        // something. After a server-side validation failure the form is
+        // re-rendered with the user's invalid input and the field <small> errors,
+        // so we treat that as already-dirty (otherwise the user couldn't resubmit
+        // without making a fresh edit).
+        document.querySelectorAll('form.dirty-aware').forEach(form => {
+            const footer = form.querySelector('footer');
+            const fields = form.querySelectorAll('input, select, textarea');
+            const initial = new Map();
+            fields.forEach(el => initial.set(el, el.type === 'checkbox' ? el.checked : el.value));
+
+            const isDirty = () => {
+                for (const [el, val] of initial) {
+                    const cur = el.type === 'checkbox' ? el.checked : el.value;
+                    if (cur !== val) return true;
+                }
+                return false;
+            };
+            const sync = () => { footer.hidden = !isDirty(); };
+
+            // Server-side errors render aria-invalid on offending inputs — keep buttons visible.
+            if (form.querySelector('[aria-invalid="true"]')) footer.hidden = false;
+
+            form.addEventListener('input', sync);
+            form.addEventListener('change', sync);
+        });
+    </script>
+</body>
+</html>

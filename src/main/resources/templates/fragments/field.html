@@ -1,0 +1,59 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--
+  Field fragments — each takes a property path (e.g. 'street') of the form-backed
+  object set with th:object on the surrounding <form>. Pico CSS uses aria-invalid
+  for the red outline; <small> renders inline help / validation text.
+
+  The *{__${path}__} idiom is Thymeleaf's preprocessing: ${path} is resolved
+  first (e.g. to the literal "street"), then the whole expression becomes
+  *{street} which Spring's th:field consumes normally.
+-->
+
+<div th:fragment="text(path, label)" class="field">
+    <label th:for="${path}" th:text="${label}">Label</label>
+    <input type="text"
+           th:field="*{__${path}__}"
+           th:errorclass="invalid"
+           th:aria-invalid="${#fields.hasErrors(path)} ? 'true' : null"/>
+    <small th:if="${#fields.hasErrors(path)}"
+           th:each="err : ${#fields.errors(path)}"
+           th:text="${err}">Error</small>
+</div>
+
+<div th:fragment="number(path, label)" class="field">
+    <label th:for="${path}" th:text="${label}">Label</label>
+    <input type="number"
+           th:field="*{__${path}__}"
+           th:aria-invalid="${#fields.hasErrors(path)} ? 'true' : null"/>
+    <small th:if="${#fields.hasErrors(path)}"
+           th:each="err : ${#fields.errors(path)}"
+           th:text="${err}">Error</small>
+</div>
+
+<div th:fragment="select(path, label, options)" class="field">
+    <label th:for="${path}" th:text="${label}">Label</label>
+    <select th:field="*{__${path}__}"
+            th:aria-invalid="${#fields.hasErrors(path)} ? 'true' : null">
+        <option value="" th:text="#{field.select.placeholder}">— select —</option>
+        <option th:each="o : ${options}" th:value="${o}" th:text="${o}">A</option>
+    </select>
+    <small th:if="${#fields.hasErrors(path)}"
+           th:each="err : ${#fields.errors(path)}"
+           th:text="${err}">Error</small>
+</div>
+
+<div th:fragment="checkbox(path, label)" class="field">
+    <label>
+        <input type="checkbox" th:field="*{__${path}__}"/>
+        <span th:text="${label}">Label</span>
+    </label>
+    <small th:if="${#fields.hasErrors(path)}"
+           th:each="err : ${#fields.errors(path)}"
+           th:text="${err}">Error</small>
+</div>
+
+</body>
+</html>
