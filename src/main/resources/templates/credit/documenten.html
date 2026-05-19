@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" data-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{credit/_layout :: head(#{credit.title})}"></head>
+<body class="container embedded">
+
+    <div th:replace="~{credit/_layout :: heading(${productId}, ${personId}, ${language})}">Heading</div>
+
+    <article class="section">
+        <details open>
+            <summary>
+                <strong th:text="#{credit.section.documents}">Documenten</strong>
+            </summary>
+            <p th:if="${#lists.isEmpty(documents)}" class="empty-state"
+               th:text="#{credit.empty.documents}">No documents yet</p>
+            <figure th:unless="${#lists.isEmpty(documents)}">
+                <table role="grid">
+                    <thead>
+                        <tr>
+                            <th th:text="#{credit.document.name}">Naam</th>
+                            <th th:text="#{credit.document.type}">Type</th>
+                            <th th:text="#{credit.document.date}">Datum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${documents}">
+                            <td th:text="${d.name}">Document</td>
+                            <td th:text="${d.type}">PDF</td>
+                            <td th:text="${#temporals.format(d.date, 'dd-MM-yyyy')}">01-06-2019</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </figure>
+        </details>
+    </article>
+
+</body>
+</html>

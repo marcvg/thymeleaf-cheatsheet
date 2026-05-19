@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en" data-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{credit/_layout :: head(#{credit.title})}"></head>
+<body class="container embedded">
+
+    <div th:replace="~{credit/_layout :: heading(${productId}, ${personId}, ${language})}">Heading</div>
+
+    <!-- ----- Algemene productgegevens ----- -->
+    <article class="section">
+        <details open>
+            <summary>
+                <strong th:text="#{credit.section.general}">Algemene productgegevens</strong>
+            </summary>
+            <div class="grid kv-grid">
+                <dl>
+                    <dt th:text="#{credit.field.contractDate}">Datum contract</dt>
+                    <dd th:text="${#temporals.format(credit.datumContract, 'dd-MM-yyyy')}">27-05-2019</dd>
+
+                    <dt th:text="#{credit.field.creditAmount}">Kredietbedrag</dt>
+                    <dd th:text="|${#numbers.formatDecimal(credit.kredietbedrag,1,'POINT',2,'COMMA')} EUR|">80.000,00 EUR</dd>
+
+                    <dt th:text="#{credit.field.availableBalance}">Beschikbaar saldo</dt>
+                    <dd>
+                        <span th:text="|${#numbers.formatDecimal(credit.beschikbaarSaldo,1,'POINT',2,'COMMA')} EUR|">53.078,03 EUR</span>
+                        <span class="info-icon"
+                              data-tooltip="Kredietbedrag − openstaand saldo"
+                              aria-label="info">&#9432;</span>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt th:text="#{credit.field.status}">Status</dt>
+                    <dd th:text="${credit.status}">Beschikbaar</dd>
+
+                    <dt th:text="#{credit.field.statusDate}">Datum status</dt>
+                    <dd th:text="${#temporals.format(credit.datumStatus, 'dd-MM-yyyy')}">29-05-2019</dd>
+
+                    <dt th:text="#{credit.field.type}">Type</dt>
+                    <dd th:text="${credit.type}">Notariële akte</dd>
+
+                    <dt th:text="#{credit.field.notary}">Notaris</dt>
+                    <dd th:text="${credit.notaris}">MICHIELS, STROEYKENS & PELGRIMS</dd>
+
+                    <dt th:text="#{credit.field.fileHandler}">Dossierbeheerder</dt>
+                    <dd th:text="${credit.dossierbeheerder}">OLIVIER SANNEN</dd>
+
+                    <dt th:text="#{credit.field.service}">Dienst</dt>
+                    <dd th:text="${credit.dienst}">Kredieten beheer</dd>
+                </dl>
+            </div>
+        </details>
+    </article>
+
+    <!-- ----- Waarborgen ----- -->
+    <article class="section">
+        <details open>
+            <summary>
+                <strong th:text="#{credit.section.guarantees}">Waarborgen</strong>
+            </summary>
+            <figure>
+                <table role="grid">
+                    <thead>
+                        <tr>
+                            <th th:text="#{credit.guarantee.type}">Type</th>
+                            <th th:text="#{credit.guarantee.guarantee}">Waarborg</th>
+                            <th th:text="#{credit.guarantee.rank}">Rang</th>
+                            <th class="num" th:text="#{credit.guarantee.amount}">Bedrag waarborg</th>
+                            <th th:text="#{credit.guarantee.description}">Omschrijving</th>
+                            <th th:text="#{credit.guarantee.owner}">Eigenaar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="w : ${credit.waarborgen}">
+                            <td th:text="${w.type}">Onroerend goed</td>
+                            <td th:text="${w.waarborg}">Hypothecaire inschrijving</td>
+                            <td th:text="${w.rang}">1</td>
+                            <td class="num"
+                                th:text="|${#numbers.formatDecimal(w.bedragWaarborg,1,'POINT',2,'COMMA')} EUR|">80.000,00 EUR</td>
+                            <td th:text="${w.omschrijving}">BANKSTRAAT 90 bus 102, 2811 HOMBEEK</td>
+                            <td>
+                                <div th:each="o : ${w.eigenaars}" th:text="${o}">Owner</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </figure>
+        </details>
+    </article>
+
+    <!-- ----- Participanten ----- -->
+    <article class="section">
+        <details open>
+            <summary>
+                <strong th:text="#{credit.section.participants}">Participanten</strong>
+            </summary>
+            <figure>
+                <table role="grid">
+                    <thead>
+                        <tr>
+                            <th th:text="#{credit.participant.name}">Naam</th>
+                            <th th:text="#{credit.participant.address}">Adres</th>
+                            <th th:text="#{credit.participant.capacity}">Hoedanigheid</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${credit.participanten}">
+                            <td th:text="${p.naam}">Name</td>
+                            <td th:text="${p.adres}">Address</td>
+                            <td th:text="${p.hoedanigheid}">Capacity</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </figure>
+        </details>
+    </article>
+
+</body>
+</html>

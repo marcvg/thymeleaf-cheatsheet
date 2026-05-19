@@ -1,0 +1,64 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <title th:text="${pageTitle}">Credit</title>
+    <style>
+        body.embedded { padding: 1rem; max-width: none; }
+        .credit-heading { color: #4a7a3a; font-size: 1.25rem; margin: 0 0 0.25rem; }
+        .credit-meta { color: var(--pico-muted-color); font-size: 0.85rem; margin-bottom: 1rem; }
+
+        article.section { padding: 0; margin-bottom: 1rem; }
+        article.section > details > summary {
+            list-style: none;
+            padding: 0.75rem 1rem;
+            color: #4a7a3a;
+            border-bottom: 1px solid var(--pico-muted-border-color);
+            cursor: pointer;
+        }
+        article.section > details > summary::-webkit-details-marker { display: none; }
+        article.section > details > summary::before {
+            content: "▾";
+            display: inline-block;
+            margin-right: 0.5rem;
+            transition: transform 0.15s ease;
+        }
+        article.section > details:not([open]) > summary::before { transform: rotate(-90deg); }
+        article.section > details > *:not(summary) { padding: 1rem; }
+
+        .kv-grid dl {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            column-gap: 1rem;
+            row-gap: 0.35rem;
+            margin: 0;
+        }
+        .kv-grid dt {
+            color: var(--pico-muted-color);
+            text-align: right;
+            font-weight: normal;
+        }
+        .kv-grid dd { margin: 0; }
+        .info-icon { color: var(--pico-primary); cursor: help; margin-left: 0.25rem; }
+        th.num, td.num { text-align: right; }
+        .empty-state { color: var(--pico-muted-color); font-style: italic; }
+    </style>
+</head>
+
+<!--
+    Page heading + meta line shared across views. Each template invokes:
+        <div th:replace="~{credit/_layout :: heading(...)}">…</div>
+-->
+<body>
+    <header th:fragment="heading(productId, personId, language)">
+        <h1 class="credit-heading" th:text="|#{credit.title} ${productId}|">Kredietopening …</h1>
+        <p class="credit-meta"
+           th:text="|#{credit.product} ${productId} · #{credit.person} ${personId} · #{credit.language} ${language}|">
+            Product · Person · Language
+        </p>
+    </header>
+</body>
+</html>

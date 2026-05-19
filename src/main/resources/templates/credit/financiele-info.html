@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="light" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{credit/_layout :: head(#{credit.title})}"></head>
+<body class="container embedded">
+
+    <div th:replace="~{credit/_layout :: heading(${productId}, ${personId}, ${language})}">Heading</div>
+
+    <article class="section">
+        <details open>
+            <summary>
+                <strong th:text="#{credit.section.financial}">Financiële info</strong>
+            </summary>
+            <div class="grid kv-grid">
+                <dl>
+                    <dt th:text="#{credit.field.interestRate}">Rentevoet</dt>
+                    <dd th:text="|${#numbers.formatDecimal(financial.interestRate,1,'POINT',2,'COMMA')} %|">2,15 %</dd>
+
+                    <dt th:text="#{credit.field.term}">Looptijd</dt>
+                    <dd th:text="|${financial.termMonths} #{credit.field.months}|">240 maanden</dd>
+
+                    <dt th:text="#{credit.field.monthlyPayment}">Maandelijkse aflossing</dt>
+                    <dd th:text="|${#numbers.formatDecimal(financial.monthlyPayment,1,'POINT',2,'COMMA')} EUR|">410,12 EUR</dd>
+                </dl>
+                <dl>
+                    <dt th:text="#{credit.field.totalPaid}">Reeds afgelost</dt>
+                    <dd th:text="|${#numbers.formatDecimal(financial.totalPaid,1,'POINT',2,'COMMA')} EUR|">26.921,97 EUR</dd>
+
+                    <dt th:text="#{credit.field.outstandingAmount}">Openstaand saldo</dt>
+                    <dd th:text="|${#numbers.formatDecimal(financial.outstandingAmount,1,'POINT',2,'COMMA')} EUR|">53.078,03 EUR</dd>
+
+                    <dt th:text="#{credit.field.nextPaymentDate}">Volgende vervaldatum</dt>
+                    <dd th:text="${#temporals.format(financial.nextPaymentDate, 'dd-MM-yyyy')}">01-06-2026</dd>
+                </dl>
+            </div>
+        </details>
+    </article>
+
+</body>
+</html>
